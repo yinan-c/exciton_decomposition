@@ -2,3 +2,6 @@
 *projbands
 *.bak
 *h5
+*.dat
+*.log
+*.out
