@@ -2,42 +2,43 @@ import pandas as pd
 import numpy as np
 
 # Things to modify by hand
-iN_S_select =1
+iN_S_select =0
+#iN_S_select = 268
 
 kgrid_file = 'kgrid.log_cocn.bak'
 kgrid_file = 'kgrid.log_CYS.bak'
 kgrid_file = 'kgrid.log_APD2.bak'
-#kgrid_file = 'kgrid.log_APD1.bak'
+kgrid_file = 'kgrid.log_APD1.bak'
 
 bandstructure_file = 'bandstructure.dat_cocn.bak'
 bandstructure_file = 'bandstructure.dat_CYS.bak'
 bandstructure_file = 'bandstructure.dat_APD2.bak'
-#bandstructure_file = 'bandstructure.dat_APD1.bak'
+bandstructure_file = 'bandstructure.dat_APD1.bak'
 
 fermi = 280 # ! for HOCN
 fermi = 304   # ! for COCN
 fermi = 544   # ! for CYS
 fermi = 408 # ! VBM - start + 1 , hard-coded for APD2_Li now, read from projbands file
-#fermi = 432   # ! for APD1_Na
+fermi = 432   # ! for APD1_Na
 
 
 eigenvector_file = 'eigenvectors.h5_hocn.bak'
 eigenvector_file = 'eigenvectors.h5_cocn.bak'
 eigenvector_file = 'eigenvectors.h5.CYS.bak'
 eigenvector_file = 'eigenvectors.h5.APD2.bak'
-#eigenvector_file = 'eigenvectors.h5.APD1.bak'
+eigenvector_file = 'eigenvectors.h5.APD1.bak'
 #eigenvector_file = 'eigenvectors_APD1_relax.h5'
 
 scf_file = 'relax.out_cocn.bak'
 scf_file = 'scf.out_CYS.bak'
 scf_file = 'scf.out_APD2_Li.bak'
-#scf_file = 'scf.out_APD1.bak'
+scf_file = 'scf.out_APD1.bak'
 
 projbands_file = 'cl.projbands_hocn.bak'
 projbands_file = 'cl.projbands_cocn.bak'
 projbands_file = 'cl.projbands.CYS.bak'
 projbands_file = 'cl.projbands_APD2_Li.bak'
-#projbands_file = 'cl.projbands.apd1.bak'
+projbands_file = 'cl.projbands.apd1.bak'
 #projbands_file = 'cl.projbands_APD1_relax.bak'
 
 e_min = 0
@@ -283,11 +284,70 @@ valence_total = ns_accumulated_df_valence.iloc[:, 5:660].sum(axis=1)
 valence_other = ns_accumulated_df_valence.iloc[:, 233+3:609+3].sum(axis=1) + ns_accumulated_df_valence.iloc[:, 625+3:657+3].sum(axis=1)
 valence_others = valence_total - valence_perovskite - valence_non_perovskite - valence_O - valence_Li - valence_other
 
+# columns from 37 to 72, 361 to 424 as the Br-per. contribution
+# columns from 1 to 36, 329 to 360 as the Br-non. contribution
+# columns from 425 to 488 as the O contribution
+# columns from 609 to 680 as the Na contribution
+# Total is 1 to 680
 
+conduction_perovskite_Pb = ns_accumulated_df_conduction.iloc[:, 37+3:73+3].sum(axis=1) 
+conduction_perovskite_Cl = ns_accumulated_df_conduction.iloc[:, 361+3:425+3].sum(axis=1)
+conduction_non_perovskite_Pb = ns_accumulated_df_conduction.iloc[:, 1+3:37+3].sum(axis=1)
+conduction_non_perovskite_Cl = ns_accumulated_df_conduction.iloc[:, 73+3:361+3].sum(axis=1)
+conduction_O = ns_accumulated_df_conduction.iloc[:, 425+3:489+3].sum(axis=1)
+conduction_Na = ns_accumulated_df_conduction.iloc[:, 609+3:649+3].sum(axis=1)
+conduction_total = ns_accumulated_df_conduction.iloc[:, 1+3:681+3].sum(axis=1)
+conduction_other = ns_accumulated_df_conduction.iloc[:, 489+3:609+3].sum(axis=1) + ns_accumulated_df_conduction.iloc[:, 649+3:681+3].sum(axis=1)
+#conduction_others = conduction_total - conduction_perovskite - conduction_non_perovskite - conduction_O - conduction_Na - conduction_other
+
+
+# valence bands for APD1_Na
+valence_perovskite = ns_accumulated_df_valence.iloc[:, 37+3:73+3].sum(axis=1) + ns_accumulated_df_valence.iloc[:, 361+3:425+3].sum(axis=1)
+valence_non_perovskite = ns_accumulated_df_valence.iloc[:, 1+3:37+3].sum(axis=1) + ns_accumulated_df_valence.iloc[:, 73+3:361+3].sum(axis=1)
+valence_O = ns_accumulated_df_valence.iloc[:, 425+3:489+3].sum(axis=1)
+valence_Na = ns_accumulated_df_valence.iloc[:, 609+3:649+3].sum(axis=1)
+valence_total = ns_accumulated_df_valence.iloc[:, 1+3:681+3].sum(axis=1)
+valence_other = ns_accumulated_df_valence.iloc[:, 489+3:609+3].sum(axis=1) + ns_accumulated_df_valence.iloc[:, 649+3:681+3].sum(axis=1)
+#valence_others = valence_total - valence_perovskite - valence_non_perovskite - valence_O - valence_Na - valence_other
+
+# columns from 37 to 72, 361 to 424 as the Br-per. contribution
+# columns from 1 to 36, 329 to 360 as the Br-non. contribution
+# columns from 425 to 488 as the O contribution
+# columns from 609 to 680 as the Na contribution
+# Total is 1 to 680
+
+conduction_perovskite_Pb = ns_accumulated_df_conduction.iloc[:, 37+3:73+3].sum(axis=1) 
+conduction_perovskite_Cl = ns_accumulated_df_conduction.iloc[:, 361+3:425+3].sum(axis=1)
+conduction_perovskite = conduction_perovskite_Pb + conduction_perovskite_Cl
+conduction_non_perovskite_Pb = ns_accumulated_df_conduction.iloc[:, 1+3:37+3].sum(axis=1)
+conduction_non_perovskite_Cl = ns_accumulated_df_conduction.iloc[:, 73+3:361+3].sum(axis=1)
+conduction_non_perovskite = conduction_non_perovskite_Pb + conduction_non_perovskite_Cl
+conduction_O = ns_accumulated_df_conduction.iloc[:, 425+3:489+3].sum(axis=1)
+conduction_Na = ns_accumulated_df_conduction.iloc[:, 609+3:649+3].sum(axis=1)
+conduction_total = ns_accumulated_df_conduction.iloc[:, 1+3:681+3].sum(axis=1)
+conduction_other = ns_accumulated_df_conduction.iloc[:, 489+3:609+3].sum(axis=1) + ns_accumulated_df_conduction.iloc[:, 649+3:681+3].sum(axis=1)
+conduction_others = conduction_total - conduction_perovskite - conduction_non_perovskite - conduction_O - conduction_Na - conduction_other
+
+
+
+print("Electron contributions from perovskite")
 print(conduction_perovskite/ conduction_total)
+print("Electron contributions from non-perovskite")
 print(conduction_non_perovskite/ conduction_total)
+print("Electron contributions from O")
+print(conduction_O/ conduction_total)
+print("Electron contributions from Li")
+print(conduction_Na/ conduction_total)
+print("Electron contributions from molecule")
+print(conduction_other/ conduction_total)
 
+print("Hole contributions from perovskite")
 print(valence_perovskite/valence_total)
+print("Hole contributions from non-perovskite")
 print(valence_non_perovskite/valence_total)
+print("Hole contributions from O")
 print(valence_O/valence_total)
+print("Hole contributions from Li")
+print(valence_Na/valence_total)
+print("Hole contributions from molecule")
 print(valence_other/valence_total)
